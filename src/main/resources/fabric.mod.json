@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "testcoop",
   "version": "${version}",
-  "name": "Coop Moves",
+  "name": "Dap Ur HOMIES",
   "description": "Cooperative player-to-player interaction mechanics",
   "authors": [],
   "contact": {},
@@ -24,6 +24,7 @@
     "fabricloader": ">=0.18.0",
     "minecraft": "~1.21.1",
     "java": ">=21",
-    "fabric-api": "*"
+    "fabric-api": "*",
+    "player_animation_library": ">=1.1.4"
   }
 }
