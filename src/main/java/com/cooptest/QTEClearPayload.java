@@ -7,10 +7,7 @@ import net.minecraft.util.Identifier;
 
 import java.util.UUID;
 
-/**
- * Payload to clear QTE UI
- * Sent from server to client when QTE ends
- */
+
 public record QTEClearPayload(UUID playerId) implements CustomPayload {
 
     public static final Identifier QTE_CLEAR_ID = Identifier.of("cooptest", "qte_clear");

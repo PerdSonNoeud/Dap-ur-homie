@@ -143,7 +143,7 @@ public class GrabNetworking {
         });
     }
 
-    // ===== BROADCAST =====
+
 
     public static void broadcastGrabState(MinecraftServer server, UUID holderUuid, UUID heldUuid, boolean isStart) {
         GrabStatePayload payload = new GrabStatePayload(holderUuid, heldUuid, isStart);

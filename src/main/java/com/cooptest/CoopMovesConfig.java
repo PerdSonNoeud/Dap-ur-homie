@@ -14,165 +14,152 @@ public class CoopMovesConfig {
     private static final File CONFIG_FILE = FabricLoader.getInstance().getConfigDir().resolve("coopmoves.json").toFile();
 
     private static CoopMovesConfig INSTANCE;
-// NOT EVERY CONFIG WORK SOME DO NOTHING BC IM I WAS LAZY OR FORGOT pls understnd :(
-    // ============ GRAB & THROW ============
+
+    public boolean noGriefMode = false;
+    public boolean easyFusionTest = false;
+    public boolean debugMode = false;
+
+    public boolean enableGrab = true;
+    public boolean enableSpin = true;
+    public boolean enableGroundPound = true;
+    public boolean enableThrow = true;
+    public boolean enableYeet = true;
     public boolean enableGrabThrow = true;
+    public boolean allowForcedPickup = true;
+    public boolean grabBreaksBlocks = false;
     public float throwMinPower = 0.5f;
     public float throwMaxPower = 1.5f;
     public int grabCooldownTicks = 20;
-    public boolean allowForcedPickup = true;
-    public boolean grabBreaksBlocks = false;
 
-    // ============ DAP ============
     public boolean enableDap = true;
-    public int dapChargeTimeMs = 1500;
-    public int dapCooldownMs = 800;
-    public int perfectWindowMs = 40;
+    public boolean enableDapCombo = true;
+    public boolean enableDapHold = true;
     public boolean enableDapFirstPerson = true;
-    public boolean dapCausesExplosion = false;   // Funny: Every dap explodes!
-
-    // ============ FIRE DAP ============
+    public boolean enableFallDap = true;
     public boolean enableFireDap = true;
+    public boolean enableHeavenDap = true;
+    public boolean dapCausesExplosion = false;
+    public boolean enablePerfectLegendary = true;
+    public long dapChargeWindowMs = 250;
+    public long dapReleaseWindowMs = 500;
+    public long dapPerfectWindowMs = 85;
+    public long dapCooldownMs = 1500;
+    public long dapWhiffCooldownMs = 800;
+    public long dapFireDelayMs = 2000;
+    public long dapFireBuildTimeMs = 2000;
+    public double tier1Knockback = 0.3;
+    public double tier2Knockback = 0.6;
+    public double tier3Knockback = 1.0;
+    public double tier4Knockback = 2.0;
     public int fireChargeDelayMs = 2000;
     public int fireBuildTimeMs = 2000;
     public float fireExplosionPower = 3.0f;
-    public int fireExplosionRadius = 50;  // Blocks
+    public int fireExplosionRadius = 50;
     public float fireKnockbackMultiplier = 15.0f;
-    public boolean fireBreaksBlocks = false;  // Funny: Fire dap destroys terrain
-
-    // ============ PERFECT LEGENDARY ============
-    public boolean enablePerfectLegendary = true;
+    public boolean fireBreaksBlocks = false;
     public double perfectLegendaryMinSpeed = 10.0;
     public int perfectLegendaryLevitationSec = 10;
     public int perfectLegendarySlowFallSec = 30;
     public boolean perfectLegendaryKillsOnFail = true;
-    public boolean perfectLegendaryGivesEffects = true;  // Give special effects on success
+    public boolean perfectLegendaryGivesEffects = true;
 
-    // ============ HIGH FIVE ============
     public boolean enableHighFive = true;
+    public boolean enableHighFiveHug = true;
+    public boolean enableHighFiveCombo = true;
+    public boolean enableHighFiveFirstPerson = true;
     public int highFiveTimeoutMs = 2500;
     public int highFiveLeftHangingCooldownMs = 1500;
-    public boolean enableHighFiveCombo = true;  // Enable double high five combo
-    public int highFiveComboWindowMs = 400;     // Time to press H for combo
-    public boolean highFiveComboAura = true;    // Black & gold aura effect
-    public boolean highFiveComboBeam = true;    // Beam to sky effect
-    public boolean enableHighFiveFirstPerson = true;  // Show hands in first person
-    public boolean highFiveCausesLightning = false;  // Funny: Lightning strike on high five!
+    public int highFiveComboWindowMs = 400;
+    public boolean highFiveComboAura = true;
+    public boolean highFiveComboBeam = true;
+    public boolean highFiveCausesLightning = false;
 
-    // ============ HUG ============
     public boolean enableHug = true;
-    public int hugDurationSec = 10;  // How long hug animation lasts
-    public boolean enableHugFirstPerson = true;  // Show both arms in first person
-    public boolean hugHealsPlayers = true;  // Funny: Hugging heals both players
-    public float hugHealAmount = 2.0f;  // Hearts to heal (if enabled)
+    public boolean enableHugFirstPerson = true;
+    public boolean hugHealsPlayers = true;
+    public float hugHealAmount = 2.0f;
+    public int hugDurationSec = 10;
 
-    // ============ PUSH ============
     public boolean enablePush = true;
+    public boolean enablePushFirstPerson = true;
+    public boolean pushCausesParticles = true;
+    public boolean pushIntoOrbit = false;
     public float pushDistance = 2.5f;
     public int pushCooldownMs = 500;
-    public boolean enablePushFirstPerson = true;  // Show both hands pushing
-    public boolean pushCausesParticles = true;  // Show push particles
-    public boolean pushIntoOrbit = false;  // Funny: Push sends players REALLY high
 
-    // ============ CATCH ============
     public boolean enableCatch = true;
+    public boolean catchNegatesFallDamage = true;
     public int catchWindowMs = 500;
     public int catchCooldownMs = 1000;
-    public boolean catchNegatesFallDamage = true;  // Catching negates fall damage
 
-    // ============ SQUASH ============
-    public boolean enableSquash = true;
-    public int squashDurationSec = 25;
-    public float squashDamage = 10.0f;
-    public int squashNauseaSec = 15;
-    public boolean squashDropsItems = true;
-    public boolean squashMakesFlat = true;  // Visual: Makes player model look flat
-
-    // ============ MAHITO ============
-    public boolean enableMahito = true;
-    public int mahitoCurseDurationSec = 60;
-    public boolean mahitoTransformsPlayer = true;  // Visual transformation effect
-
-    // ============ MARIO JUMP ============
     public boolean enableMarioJump = true;
-    public float marioJumpPower = 2.0f;  // Jump height multiplier
-    public boolean marioJumpSound = true;  // Play Mario jump sound
-    public boolean marioJumpParticles = true;  // Show particles
+    public boolean marioJumpSound = true;
+    public boolean marioJumpParticles = true;
+    public float marioJumpPower = 2.0f;
 
-    // ============ SHIELD MODE ============
+    public boolean enableKick = true;
+    public boolean enableDropKick = true;
+
+    public boolean enableSlap = true;
+
+    public boolean enableClap = true;
+
+    public boolean enableMahito = true;
+    public boolean mahitoTransformsPlayer = true;
+    public int mahitoCurseDurationSec = 60;
+
     public boolean enableShieldMode = true;
-    public float shieldDamageReduction = 0.8f;  // 80% damage reduction for holder
-    public boolean shieldBlocksProjectiles = true;  // Shield blocks arrows, etc
-    public int shieldSwapCooldownMs = 3000;  // Cooldown to switch between shield/throw
+    public boolean shieldBlocksProjectiles = true;
+    public float shieldDamageReduction = 0.8f;
+    public int shieldSwapCooldownMs = 3000;
 
-    // ============ FIRST PERSON ANIMATIONS ============
-    public boolean enableFirstPersonAnimations = true;  // Master toggle
-    public float firstPersonArmForwardOffset = 3.0f;  // How far forward arms are (Z position)
-    public float firstPersonArmHeightOffset = 2.0f;   // How high arms are (Y position)
-    public boolean firstPersonSmoothEndings = true;   // Gradual fade-out instead of instant
+    public boolean enableSquash = true;
+    public boolean squashDropsItems = true;
+    public boolean squashMakesFlat = true;
+    public float squashDamage = 10.0f;
+    public int squashDurationSec = 25;
+    public int squashNauseaSec = 15;
 
-    // ============ SOUNDS ============
+    public boolean enableFirstPersonAnimations = true;
+    public boolean firstPersonSmoothEndings = true;
+    public float firstPersonArmForwardOffset = 3.0f;
+    public float firstPersonArmHeightOffset = 2.0f;
+
+    public boolean showDapChargeBar = true;
+    public boolean showFireChargeBar = true;
+    public boolean announcePerectLegendaryInChat = true;
+    public boolean announceMahitoInChat = true;
+    public boolean announceComboInChat = true;
+
+    public boolean enableParticles = true;
+    public float particleDensity = 1.0f;
     public float dapSoundVolume = 1.0f;
     public float explosionSoundVolume = 1.5f;
     public float epicDapSoundVolume = 2.0f;
     public float highFiveSoundVolume = 1.0f;
     public float pushSoundVolume = 1.0f;
-    public boolean muteAllSounds = false;  // Disable all mod sounds
+    public boolean muteAllSounds = false;
 
-    // ============ VISUAL EFFECTS ============
-    public boolean enableParticles = true;  // Master particle toggle
-    public float particleDensity = 1.0f;  // Multiplier for particle count (0.5 = half, 2.0 = double)
-    public boolean enableScreenShake = true;  // Camera shake on big impacts
-    public boolean enableSlowMotion = false;  // Funny: Slow motion on perfect daps
-
-    // ============ MISC ============
-    public boolean showDapChargeBar = true;
-    public boolean showFireChargeBar = true;
-    public boolean announcePerectLegendaryInChat = true;
-    public boolean announceMahitoInChat = true;
-    public boolean announceComboInChat = true;  // Announce high five combo
-    public boolean debugMode = false;  // Show debug messages in console
-
-    // ============ FUNNY/CHAOS OPTIONS ============
-    public boolean funnyMode = false;  // Enable all funny options
-    public boolean randomizeKnockback = false;  // Knockback is random each time
-    public boolean reverseGravity = false;  // All throws go UP instead of forward
-    public boolean bouncyPlayers = false;  // Players bounce when they land
-    public float chaosMultiplier = 1.0f;  // Multiply all effects by this (2.0 = double chaos!)
-
-    /**
-     * Get the config instance (loads from file if needed)
-     */
     public static CoopMovesConfig get() {
-        if (INSTANCE == null) {
-            load();
-        }
+        if (INSTANCE == null) load();
         return INSTANCE;
     }
 
-    /**
-     * Load config from file, or create default if not exists
-     */
     public static void load() {
         if (CONFIG_FILE.exists()) {
             try (FileReader reader = new FileReader(CONFIG_FILE)) {
                 INSTANCE = GSON.fromJson(reader, CoopMovesConfig.class);
-                if (INSTANCE == null) {
-                    INSTANCE = new CoopMovesConfig();
-                }
+                if (INSTANCE == null) INSTANCE = new CoopMovesConfig();
             } catch (IOException e) {
                 System.err.println("[CoopMoves] Failed to load config: " + e.getMessage());
                 INSTANCE = new CoopMovesConfig();
             }
         } else {
             INSTANCE = new CoopMovesConfig();
-            save(); // Create default config file
+            save();
         }
     }
 
-    /**
-     * Save config to file
-     */
     public static void save() {
         try {
             CONFIG_FILE.getParentFile().mkdirs();
@@ -184,9 +171,6 @@ public class CoopMovesConfig {
         }
     }
 
-    /**
-     * Reload config from file
-     */
     public static void reload() {
         INSTANCE = null;
         load();

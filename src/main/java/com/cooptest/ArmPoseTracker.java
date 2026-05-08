@@ -18,7 +18,7 @@ public class ArmPoseTracker {
 
     public static final HashMap<UUID, PoseState> lastPose = new HashMap<>();
 
-  
+
     public static void cleanup(UUID playerId) {
         rightArmPitch.remove(playerId);
         leftArmPitch.remove(playerId);

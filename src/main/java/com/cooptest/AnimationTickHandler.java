@@ -9,8 +9,8 @@ import java.util.UUID;
 public class AnimationTickHandler {
 
     private static final HashMap<UUID, Integer> animationTicks = new HashMap<>();
-    private static final int ACTION_DURATION = 10;  // ~0.5 seconds
-    private static final int RETURN_DURATION = 10;  // ~0.5 seconds
+    private static final int ACTION_DURATION = 10;
+    private static final int RETURN_DURATION = 10;
 
     public static void register() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {

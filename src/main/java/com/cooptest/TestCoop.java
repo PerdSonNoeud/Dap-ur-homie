@@ -1,102 +1,119 @@
 package com.cooptest;
-
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-
 public class TestCoop implements ModInitializer {
     @Override
     public void onInitialize() {
         try {
-            System.out.println("[TestCoop] Starting initialization...");
-
-            System.out.println("[TestCoop] Loading config...");
             CoopMovesConfig.load();
-
-            System.out.println("[TestCoop] Registering sounds...");
+            CoopMovesConfig cfg = CoopMovesConfig.get();
             ModSounds.register();
-
-            System.out.println("[TestCoop] Registering effects...");
             ModEffects.register();
             MahitoItems.register();
-
-            System.out.println("[TestCoop] Registering payloads...");
             PoseNetworking.registerPayloads();
+            NormalFacingDapHandler.registerPayloads();
+            SitHandler.registerPayloads();
             PoseNetworking.registerServerReceiver();
-
-            GrabNetworking.registerPayloads();
-            GrabNetworking.registerServerReceivers();
-            GrabMechanic.ShieldModePayload.register();
-
-            HighFiveHandler.registerPayloads();
-            ChargedDapHandler.registerPayloads();
-
-            System.out.println("[TestCoop] Registering QTE system...");
-
-            PushInteractionHandler.registerPayloads();
-            FallCatchHandler.registerPayloads();
+            if (cfg.enableGrab) {
+                GrabNetworking.registerPayloads();
+                GrabNetworking.registerServerReceivers();
+                GrabMechanic.ShieldModePayload.register();
+                GrabInteractionHandler.register();
+                GrabMechanic.registerShieldDamageEvent();
+                if (cfg.enableSpin) {
+                    SpinHandler.register();
+                }
+                if (cfg.enableGroundPound) {
+                    GroundPoundHandler.register();
+                }
+            }
+            if (cfg.enableHighFive) {
+                HighFiveHandler.registerPayloads();
+                HighFiveHandler.register();
+            }
+            if (cfg.enableHighFiveHug) {
+                HighFiveHugHandler.registerPayloads();
+                HighFiveHugHandler.register();
+                HighFiveQTEHugHandler.registerPayloads();
+                HighFiveQTEHugHandler.register();
+            }
+            if (cfg.enableHighFive) {
+                HuddleHandler.registerPayloads();
+                HuddleHandler.register();
+            }
+            if (cfg.enableDap) {
+                ChargedDapHandler.registerPayloads();
+                ChargedDapHandler.register();
+                DapSessionManager.register();
+                DapFusionHandler.registerPayloads();
+                DapFusionHandler.register();
+                MeteorStrikeHandler.registerPayloads();
+                MeteorStrikeHandler.register();
+                PerfectDapComboHandler.register();
+                FacingDapHandler.register();
+                NormalFacingDapHandler.register();
+                SitHandler.register();
+            }
+            if (cfg.enableDapHold) {
+                DapHoldHandler.register();
+            }
+            if (cfg.enablePush) {
+                PushInteractionHandler.registerPayloads();
+                PushInteractionHandler.register();
+            }
+            if (cfg.enableCatch) {
+                FallCatchHandler.registerPayloads();
+                FallCatchHandler.register();
+            }
+            if (cfg.enableMarioJump) {
+                MarioJumpHandler.registerPayloads();
+                MarioJumpHandler.register();
+            }
+            if (cfg.enableHeavenDap) {
+                HeavenDapPayloads.registerPayloads();
+            }
+            if (cfg.enableFallDap) {
+                FallDapHandler.register();
+            }
+            if (cfg.enableClap) {
+                ClapHandler.registerPayloads();
+                ClapHandler.register();
+            }
             MahitoTrollHandler.register();
-            FallDapHandler.register();
-
-            System.out.println("[TestCoop] Registering Mario Jump...");
-            MarioJumpHandler.registerPayloads();
-            MarioJumpHandler.register();
-
-            System.out.println("[TestCoop] Registering Hug System payloads...");
-            HighFiveHugHandler.registerPayloads();
-
-            System.out.println("[TestCoop] Registering Heaven Dap...");
-            HeavenDapPayloads.registerPayloads();
-
-            System.out.println("[TestCoop] Registering Hug System...");
-            HighFiveHugHandler.register();
-
-            System.out.println("[TestCoop] Registering handlers...");
-            GrabInteractionHandler.register();
-            GrabMechanic.registerShieldDamageEvent();
-            PushInteractionHandler.register();
-            HighFiveHandler.register();
-            ChargedDapHandler.register();
-
-            System.out.println("[TestCoop] Registering DapSession system...");
-            DapSessionManager.register();  //
-            FallCatchHandler.register();
-
-            DapHoldHandler.register();
-            System.out.println("[TestCoop] Registering animation handlers...");
             AnimationTickHandler.register();
-            CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
-                FireDapTestCommand.register(dispatcher);
-                DapHoldTestCommand.register(dispatcher);
-                HeavenDapTestCommand.register(dispatcher);
-                HeavenDapSoloCommand.register(dispatcher);
-                DebugQTECommand.register(dispatcher);
-
-
-
-
-            });
             LaunchedPlayerTracker.register();
-
             CarryingSlowdown.register();
-
             PlayerCleanupHandler.register();
-
-            System.out.println("[TestCoop] Registering server tick...");
+            if (cfg.enableKick) {
+                KickHandler.register();
+            }
+            if (cfg.enableSlap) {
+                SlapHandler.register();
+            }
+            CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
+                DebugQTECommand.register(dispatcher);
+                dispatcher.register(net.minecraft.server.command.CommandManager
+                        .literal("sit").executes(SitHandler::executeSit));
+           //     HeavenDapCommand.register(dispatcher);
+            });
             ServerTickEvents.END_SERVER_TICK.register(server -> {
-                GrabMechanic.tick(server);
-                ChargedDapHandler.checkTickSpeedRestore(server);
-                QTEManager.tick(server);
-                DapComboChain.tick(server);
-                if (server.getTicks() % 20 == 0) {
+                if (cfg.enableGrab) {
+                    if (cfg.enableGroundPound) GroundPoundHandler.tick(server);
+                    GrabMechanic.tick(server);
+                    if (cfg.enableSpin) SpinHandler.tick(server);
+                }
+                if (cfg.enableDap) {
+                    ChargedDapHandler.checkTickSpeedRestore(server);
+                    QTEManager.tick(server);
+                    if (cfg.enableDapCombo) DapComboChain.tick(server);
+                }
+                if (cfg.enablePush && server.getTicks() % 20 == 0) {
                     PushInteractionHandler.cleanupExpiredImmunity();
                 }
             });
-
-            System.out.println("[TestCoop] Initialization complete!");
-
         } catch (Exception e) {
-            System.err.println("[TestCoop] bruh CRAASH during initialization");
+            System.err.println("[TestCoop] CRASH during initialization!");
             e.printStackTrace();
             throw new RuntimeException("TestCoop initialization failed", e);
         }

@@ -19,7 +19,6 @@ public class MahitoItems {
     public static RegistryEntry<Potion> MAHITO_POTION;
 
     public static void register() {
-        // Register the potion type - 60 seconds duration
         Potion mahitoPotion = new Potion(
                 new StatusEffectInstance(ModEffects.MAHITO, 1200, 0) // 60 seconds
         );
@@ -30,7 +29,6 @@ public class MahitoItems {
                 mahitoPotion
         );
 
-        // Add to creative tab
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FOOD_AND_DRINK).register(content -> {
             ItemStack potionStack = new ItemStack(Items.POTION);
             potionStack.set(DataComponentTypes.POTION_CONTENTS,
@@ -39,9 +37,7 @@ public class MahitoItems {
         });
     }
 
-    /**
-     * Create a Mahito Stuff Potion item stack
-     */
+
     public static ItemStack createMahitoPotion() {
         ItemStack stack = new ItemStack(Items.POTION);
         stack.set(DataComponentTypes.POTION_CONTENTS,
