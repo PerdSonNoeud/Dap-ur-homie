@@ -5,10 +5,20 @@
 			"loop": true,
 			"bones": {
 				"right_arm": {
-					"rotation": [-62.5, 0, 0]
+					"rotation": {
+						"vector": [-114.4623, -17.2476, -5.6328]
+					},
+					"position": {
+						"vector": [0, -1, -4]
+					}
 				},
 				"left_arm": {
-					"rotation": [-60.29958, 26.11218, 20.07273]
+					"rotation": {
+						"vector": [-16.7004, -32.1367, -8.0517]
+					},
+					"position": {
+						"vector": [0, -1, 1]
+					}
 				}
 			}
 		}
