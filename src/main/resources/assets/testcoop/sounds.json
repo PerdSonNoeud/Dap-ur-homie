@@ -72,12 +72,22 @@
     ],
     "subtitle": "Weak dap"
   },
+  "snap": {
+    "sounds": [
+      {
+        "name": "testcoop:snap",
+        "stream": false
+      }
+    ]
+  },
+
   "dap.hit": {
     "sounds": [
       "testcoop:dap_hit"
     ],
     "subtitle": "Dap hit"
   },
+
   "aura": {
     "sounds": [
       {
@@ -86,5 +96,15 @@
       }
     ],
     "subtitle": "Aura"
-  }
+  },
+
+  "clap1": { "sounds": [{ "name": "testcoop:clap1", "stream": false }] },
+  "clap2": { "sounds": [{ "name": "testcoop:clap2", "stream": false }] },
+  "clap3": { "sounds": [{ "name": "testcoop:clap3", "stream": false }] },
+  "clap4": { "sounds": [{ "name": "testcoop:clap4", "stream": false }] },
+  "clap5": { "sounds": [{ "name": "testcoop:clap5", "stream": false }] },
+  "clap6": { "sounds": [{ "name": "testcoop:clap6", "stream": false }] },
+  "heli": { "sounds": [{ "name": "testcoop:heli", "stream": false }], "subtitle": "Helicopter spin" },
+  "cooldap": { "sounds": [{ "name": "testcoop:cooldap", "stream": false }] },
+  "slap": { "sounds": [{ "name": "testcoop:slap", "stream": false }] }
 }
