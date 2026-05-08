@@ -7,7 +7,7 @@ import java.util.UUID;
 public class ThrowAnimationTracker {
 
     private static final HashMap<UUID, Long> throwAnimStartTime = new HashMap<>();
-    public static final long THROW_ANIM_DURATION = 300; // milliseconds
+    public static final long THROW_ANIM_DURATION = 300;
 
     public static void triggerThrowAnimation(UUID playerId) {
         throwAnimStartTime.put(playerId, System.currentTimeMillis());

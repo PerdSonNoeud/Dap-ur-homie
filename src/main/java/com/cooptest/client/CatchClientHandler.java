@@ -13,9 +13,8 @@ public class CatchClientHandler {
     private static final Map<UUID, Long> catcherAnimStart = new HashMap<>();
     private static final Map<UUID, Long> caughtAnimStart = new HashMap<>();
 
-    // Animation durations in ms
-    private static final long CATCHER_ANIM_DURATION = 500;  // Arms pull in
-    private static final long CAUGHT_ANIM_DURATION = 400;   // Brief caught pose
+    private static final long CATCHER_ANIM_DURATION = 500;
+    private static final long CAUGHT_ANIM_DURATION = 400;
 
     public static void register() {
         ClientPlayNetworking.registerGlobalReceiver(FallCatchHandler.CatchAnimPayload.ID,
@@ -25,7 +24,6 @@ public class CatchClientHandler {
                         catcherAnimStart.put(payload.catcherId(), now);
                         caughtAnimStart.put(payload.caughtId(), now);
 
-                        // Play PAL catch animation for catcher
                         if (context.client().world != null) {
                             for (net.minecraft.entity.player.PlayerEntity player : context.client().world.getPlayers()) {
                                 if (player.getUuid().equals(payload.catcherId())) {

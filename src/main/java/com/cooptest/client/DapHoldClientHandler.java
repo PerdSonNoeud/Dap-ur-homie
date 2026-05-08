@@ -12,34 +12,38 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/**
- * DapHoldClientHandler - Client side with COMPLETE animation locking
- */
 public class DapHoldClientHandler {
 
-    // My state in current pair
+
     private static int myRole       = -1;
     private static UUID myPartnerId = null;
     private static boolean windowOpen = false;
     private static boolean looping    = false;
 
-    // CRITICAL: Lock prevents ALL other animations from playing
+
+    private static boolean isGroupJoiner  = false;
+    private static UUID    groupHfId      = null;
+    private static int     groupMemberCount = 0;
+
+
     private static boolean animationLocked = false;
     private static final Set<UUID> lockedPlayers = new HashSet<>();
 
-    // Track which animations we've played (by "UUID-role" to allow same player both roles in test)
+
     private static final Set<String> startAnimPlayed = new HashSet<>();
     private static final Set<UUID> loopAnimPlayed  = new HashSet<>();
 
-    // Movement freeze map
+
     private static final Map<UUID, Boolean> freezeMap = new HashMap<>();
 
-    // J key state tracking
+
     private static boolean jWasHeld = false;
+
+    private static boolean gWasHeld = false;
 
     public static void register() {
 
-        // S→C: Start - LOCK animations and play DapHold animations
+
         ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.DapHoldStartPayload.ID,
                 (payload, ctx) -> ctx.client().execute(() -> {
                     MinecraftClient client = ctx.client();
@@ -51,13 +55,13 @@ public class DapHoldClientHandler {
 
                     System.out.println("[DapHold Client] Received payload for " + payloadId + " partner=" + partnerId + " role=" + payload.role());
 
-                    // LOCK animations for both players
+
                     lockedPlayers.add(payloadId);
                     lockedPlayers.add(partnerId);
 
-                    // Check if this payload is for us
+
                     if (payloadId.equals(localId)) {
-                        // If starting fresh (not already in interaction), clear tracking
+
                         if (myRole == -1) {
                             startAnimPlayed.clear();
                             loopAnimPlayed.clear();
@@ -73,8 +77,8 @@ public class DapHoldClientHandler {
                         System.out.println("[DapHold Client] Starting! My role=" + myRole);
                     }
 
-                    // Play animation ONLY if we haven't already played it for this player+role
-                    // Key format: "UUID-role" allows same player to have both roles in single player test
+
+
                     String animKey = payloadId.toString() + "-" + payload.role();
                     if (!startAnimPlayed.contains(animKey)) {
                         startAnimPlayed.add(animKey);
@@ -89,14 +93,14 @@ public class DapHoldClientHandler {
                     }
                 }));
 
-        // S→C: J window open/close
+
         ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.DapHoldWindowPayload.ID,
                 (payload, ctx) -> ctx.client().execute(() -> {
                     if (myRole == -1) return;
                     windowOpen = payload.open();
                 }));
 
-        // S→C: Switch to dapping loop
+
         ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.DapHoldLoopPayload.ID,
                 (payload, ctx) -> ctx.client().execute(() -> {
                     if (myRole == -1) return;
@@ -108,7 +112,7 @@ public class DapHoldClientHandler {
                     if (looping) {
                         System.out.println("[DapHold Client] 🔥 DAPPING LOOP! 🔥");
 
-                        // Play dapping for BOTH
+
                         CoopAnimationHandler.playDapHoldDapping(client.player);
 
                         if (myPartnerId != null) {
@@ -120,7 +124,7 @@ public class DapHoldClientHandler {
                     }
                 }));
 
-        // S→C: End interaction
+
         ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.DapHoldEndPayload.ID,
                 (payload, ctx) -> ctx.client().execute(() -> {
                     if (myRole == -1) return;
@@ -130,7 +134,7 @@ public class DapHoldClientHandler {
                     boolean wasLooping = payload.wasLooping();
 
                     if (wasLooping) {
-                        // Play dapping_end for BOTH
+
                         CoopAnimationHandler.playDapHoldEnd(client.player);
 
                         if (myPartnerId != null) {
@@ -141,56 +145,135 @@ public class DapHoldClientHandler {
                         }
                     }
 
-                    // Cleanup after animation
+
                     new Thread(() -> {
                         try { Thread.sleep(1100); } catch (InterruptedException ignored) {}
                         client.execute(() -> {
                             FirstPersonAnimationTest.stop();
 
-                            // UNLOCK animations
+
                             UUID localId = client.player != null ? client.player.getUuid() : null;
                             if (localId != null) {
                                 lockedPlayers.remove(localId);
                                 if (myPartnerId != null) {
                                     lockedPlayers.remove(myPartnerId);
                                 }
-                                System.out.println("[DapHold Client] UNLOCKED animations");
                             }
 
                             animationLocked = false;
-                            myRole      = -1;
-                            myPartnerId = null;
-                            looping     = false;
-                            windowOpen  = false;
-                            jWasHeld    = false;
+                            myRole       = -1;
+                            myPartnerId  = null;
+                            looping      = false;
+                            windowOpen   = false;
+                            jWasHeld     = false;
 
-                            // Clear animation tracking
+                            isGroupJoiner  = false;
+                            groupHfId      = null;
+                            groupMemberCount = 0;
+
                             startAnimPlayed.clear();
                             loopAnimPlayed.clear();
                         });
                     }).start();
                 }));
 
-        // S→C: Freeze / unfreeze
+
         ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.DapHoldFreezePayload.ID,
                 (payload, ctx) -> ctx.client().execute(() -> {
                     freezeMap.put(payload.playerId(), payload.frozen());
                 }));
 
-        // Tick: send J hold/release
+
+        ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.GroupJoinedPayload.ID,
+                (payload, ctx) -> ctx.client().execute(() -> {
+                    MinecraftClient client = ctx.client();
+                    if (client.player == null || client.world == null) return;
+                    UUID localId = client.player.getUuid();
+                    groupMemberCount = payload.memberCount();
+
+
+                    if (payload.joinerId().equals(localId)) {
+                        isGroupJoiner = true;
+                        groupHfId     = payload.hfId();
+                        animationLocked = true;
+                        lockedPlayers.add(localId);
+
+
+                        CoopAnimationHandler.playDapHoldStart(client.player, 0);
+                    }
+
+
+                    PlayerEntity joinerEntity = client.world.getPlayerByUuid(payload.joinerId());
+                    if (joinerEntity != null && !payload.joinerId().equals(localId)) {
+                        CoopAnimationHandler.playDapHoldStart(joinerEntity, 0);
+                    }
+                }));
+
+
+        ClientPlayNetworking.registerGlobalReceiver(DapHoldHandler.GroupResultPayload.ID,
+                (payload, ctx) -> ctx.client().execute(() -> {
+                    MinecraftClient client = ctx.client();
+                    if (client.player == null) return;
+
+                    if (isGroupJoiner) {
+
+                        new Thread(() -> {
+                            try { Thread.sleep(1100); } catch (InterruptedException ignored) {}
+                            client.execute(() -> {
+                                FirstPersonAnimationTest.stop();
+                                if (client.player != null) {
+                                    lockedPlayers.remove(client.player.getUuid());
+                                }
+                                animationLocked = false;
+                                isGroupJoiner   = false;
+                                groupHfId       = null;
+                                groupMemberCount = 0;
+                                jWasHeld        = false;
+                            });
+                        }).start();
+                    }
+                }));
+
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
-            if (myRole == -1) {
+
+            boolean jHeld = ChargedDapClientHandler.isFireDapJKeyHeld();
+
+            boolean gHeld = ChargedDapClientHandler.getChargeKey() != null
+                    && ChargedDapClientHandler.getChargeKey().isPressed();
+
+
+            if (myRole == -1 && !isGroupJoiner) {
+
+                if (!gHeld && gWasHeld) {
+                    ClientPlayNetworking.send(new DapHoldHandler.GroupJoinPayload());
+                }
+                gWasHeld = gHeld;
+
                 jWasHeld = false;
                 return;
             }
+
+
+            if (isGroupJoiner) {
+                if (jHeld) {
+                    ClientPlayNetworking.send(new DapHoldHandler.DapHoldJHoldPayload());
+                    jWasHeld = true;
+                } else if (jWasHeld) {
+                    ClientPlayNetworking.send(new DapHoldHandler.DapHoldJReleasePayload());
+                    jWasHeld = false;
+                }
+                gWasHeld = gHeld;
+                return;
+            }
+
 
             if (!windowOpen && !looping) {
                 jWasHeld = false;
+                gWasHeld = gHeld;
                 return;
             }
-
-            boolean jHeld = ChargedDapClientHandler.isFireDapJKeyHeld();
 
             if (jHeld) {
                 ClientPlayNetworking.send(new DapHoldHandler.DapHoldJHoldPayload());
@@ -199,12 +282,13 @@ public class DapHoldClientHandler {
                 ClientPlayNetworking.send(new DapHoldHandler.DapHoldJReleasePayload());
                 jWasHeld = false;
             }
+            gWasHeld = gHeld;
         });
 
         System.out.println("[DapHold Client] Registered!");
     }
 
-    // ---- Public queries ----
+
 
     public static boolean isLocalPlayerFrozen() {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -216,10 +300,6 @@ public class DapHoldClientHandler {
         return freezeMap.getOrDefault(playerId, false);
     }
 
-    /**
-     * Check if player's animations are locked by DapHold
-     * CRITICAL: Use this in CoopAnimationHandler to block other animations!
-     */
     public static boolean isAnimationLocked(UUID playerId) {
         return lockedPlayers.contains(playerId);
     }
