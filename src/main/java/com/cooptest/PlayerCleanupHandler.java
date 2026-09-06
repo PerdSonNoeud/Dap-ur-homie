@@ -22,7 +22,7 @@ public class PlayerCleanupHandler {
             MarioJumpHandler.cleanup(uuid);
             DivineFlamCombo.cleanup(uuid);
             KickHandler.cleanup(uuid);
-            BonkHandler.cleanup(uuid);
+            // BonkHandler.cleanup(uuid);
             NormalFacingDapHandler.cleanup(uuid);
             SitHandler.cleanup(uuid);
             SpinHandler.cleanup(uuid);
@@ -34,6 +34,8 @@ public class PlayerCleanupHandler {
                         ServerPlayNetworking.send(other,
                                 new PoseNetworking.AnimStateSyncPayload(uuid, 0));
                     } catch (Exception e) {
+                        System.out.println("Failed to send anim state sync to player " + other.getName().getString() +
+                                " for disconnected player " + player.getName().getString() + ": " + e.getMessage());
                     }
                 }
             }
