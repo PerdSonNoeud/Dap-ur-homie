@@ -12,7 +12,7 @@ public class QTEManager {
     private static final int STAGE_3_DELAY_TICKS = 4;
     private static final int STAGE_3_WINDOW_TICKS = 6;
     private static final int TIMEOUT_GRACE_TICKS = 4;
-    private static final String[] BUTTONS = {"G"};
+    private static final String[] BUTTONS = {"G", "H"};
     private static final Random RANDOM = new Random();
     private static final Map<UUID, QTESession> activeSessions = new HashMap<>();
     public static class QTESession {
