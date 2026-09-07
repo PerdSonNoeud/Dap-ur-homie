@@ -639,9 +639,7 @@ public class ChargedDapHandler {
                     ServerPlayNetworking.send(effect.p2(), new PerfectDapImpactFramePayload(1));
 
                     world.spawnParticles(ParticleTypes.EXPLOSION, pos.x, pos.y, pos.z, 5, 0.2, 0.2, 0.2, 0);
-
                     world.spawnParticles(ParticleTypes.CRIT, pos.x, pos.y, pos.z, 40, 0.4, 0.4, 0.4, 0.12);
-
                     world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 50, 0.5, 0.5, 0.5, 0.15);
 
                     world.playSound(null, pos.x, pos.y, pos.z,
@@ -809,18 +807,19 @@ public class ChargedDapHandler {
                     continue;
                 }
 
+                // missed timing
                 if (elapsed >= 3000 && elapsed <= 9000) {
                     Vec3d pos = player.getPos();
 
                     data.world.spawnParticles(ParticleTypes.WHITE_ASH,
                             pos.x, pos.y + 1, pos.z,
                             5, 1.0, 1.0, 1.0, 0.02);
-
                     data.world.spawnParticles(ParticleTypes.CLOUD,
                             pos.x, pos.y, pos.z,
                             3, 0.5, 0.5, 0.5, 0.01);
                 }
 
+                // slap
                 if (elapsed >= 9500 && elapsed < 9600) {
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 40, 0, false, false));
                 }
@@ -830,6 +829,7 @@ public class ChargedDapHandler {
                     UUID partnerId = data.partnerId;
                     ServerPlayerEntity partner = server.getPlayerManager().getPlayer(partnerId);
 
+                    // Found someone to dap with
                     if (partner != null) {
                         double dx = partner.getX() - player.getX();
                         double dz = partner.getZ() - player.getZ();
@@ -837,7 +837,6 @@ public class ChargedDapHandler {
                         float yawAwayFromPartner = yawTowardsPartner + 180;
 
                         player.teleport(data.world, returnPos.x, returnPos.y, returnPos.z, yawAwayFromPartner, 0);
-
                         player.stopFallFlying();
                         player.setVelocity(Vec3d.ZERO);
                         player.velocityModified = true;
@@ -1012,29 +1011,23 @@ public class ChargedDapHandler {
                 }
 
                 if (elapsed >= FIRE_DAP_HIT_LENGTH && inFireDapHit.getOrDefault(playerId, false)) {
-
                     Long jpressTime = fireDapComboRequestTime.get(playerId);
                     if (jpressTime != null && (now - jpressTime) < 2000) {
-
                         if (now - jpressTime >= 1000) {
-
                             UUID partnerId = fireDapPartner.get(playerId);
                             if (partnerId != null) {
                                 ServerPlayerEntity partner = server.getPlayerManager().getPlayer(partnerId);
                                 if (partner != null) {
-
                                     partner.sendMessage(net.minecraft.text.Text
                                                     .literal("§c✗ You missed the combo! " + player.getName().getString()
                                                             + " pressed J!"),
                                             true);
-
                                     player.sendMessage(
                                             net.minecraft.text.Text.literal(
                                                     "§c✗ " + partner.getName().getString() + " missed the combo!"),
                                             true);
                                 }
                             }
-
                         } else {
                             continue;
                         }
@@ -1283,7 +1276,6 @@ public class ChargedDapHandler {
                 if (impactFreezeTicks.containsKey(id)) {
                     int remaining = impactFreezeTicks.get(id);
                     if (remaining > 0) {
-
                         player.setVelocity(0, Math.min(0, player.getVelocity().y), 0);
                         player.velocityModified = true;
                         impactFreezeTicks.put(id, remaining - 1);
@@ -1291,7 +1283,6 @@ public class ChargedDapHandler {
                         impactFreezeTicks.remove(id);
                     }
                 }
-
                 Vec3d velocity = getEffectiveVelocity(player);
                 double speed = velocity.length() * 20.0;
 
@@ -1301,17 +1292,13 @@ public class ChargedDapHandler {
                     history.removeFirst();
                 }
 
+                // Charging handler
                 if (chargeStartTime.containsKey(id)) {
                     float charge = getChargePercent(id);
-
                     double horizontalSpeed = Math.sqrt(velocity.x * velocity.x + velocity.z * velocity.z) * 20.0;
-
                     if (charge >= 0.99f) {
-
                         boolean isMoving = horizontalSpeed >= MIN_MOVEMENT_SPEED;
-
                         if (isMoving) {
-
                             fireGraceTime.remove(id);
 
                             if (!CoopMovesConfig.get().enableFireDap) {
@@ -1321,26 +1308,22 @@ public class ChargedDapHandler {
                                 if (!fireStartTime.containsKey(id)) {
                                     fireStartTime.put(id, now);
                                 }
-
                                 long timeAtFullCharge = now - fireStartTime.get(id);
 
                                 if (timeAtFullCharge >= fireDelayMs()) {
-
                                     long fireBuildTime = timeAtFullCharge - fireDelayMs();
                                     float fire = Math.min(1.0f, (float) fireBuildTime / fireBuildTimeMs());
                                     fireLevel.put(id, fire);
 
+                                    // fire particles around the arm while running
                                     spawnFireHandParticles(player, fire);
 
                                     if (fire >= 0.99f) {
-
                                         if (!fireMaxedStartTime.containsKey(id)) {
                                             fireMaxedStartTime.put(id, now);
                                         }
-
                                         long timeAtMaxFire = now - fireMaxedStartTime.get(id);
                                         if (timeAtMaxFire >= HEAVEN_READY_TIME_MS && !heavenReady.contains(id)) {
-
                                             heavenReady.add(id);
 
                                             player.getServerWorld().playSound(null, player.getX(), player.getY(),
@@ -1348,7 +1331,6 @@ public class ChargedDapHandler {
                                                     net.minecraft.sound.SoundEvents.BLOCK_GLASS_BREAK,
                                                     net.minecraft.sound.SoundCategory.PLAYERS,
                                                     1.0f, 0.8f);
-
                                             player.sendMessage(
                                                     net.minecraft.text.Text
                                                             .literal("§d§l✨ HEAVEN READY! ✨ §7(Fire UI broken!)"),
@@ -1360,23 +1342,19 @@ public class ChargedDapHandler {
                                             }
                                         }
                                     } else {
-
                                         fireMaxedStartTime.remove(id);
                                     }
                                 } else {
-
                                     fireLevel.put(id, 0f);
                                 }
                             }
                         } else {
-
                             if (!fireGraceTime.containsKey(id)) {
                                 fireGraceTime.put(id, now);
                             }
 
                             long graceDuration = now - fireGraceTime.get(id);
                             if (graceDuration > FIRE_GRACE_PERIOD_MS) {
-
                                 fireStartTime.remove(id);
                                 fireLevel.put(id, 0f);
                                 fireMaxedStartTime.remove(id);
@@ -1385,10 +1363,8 @@ public class ChargedDapHandler {
                                     broadcastHeavenReadyStatus(server, id);
                                 }
                             }
-
                         }
                     } else {
-
                         fireStartTime.remove(id);
                         fireGraceTime.remove(id);
                         fireLevel.put(id, 0f);
@@ -1469,7 +1445,6 @@ public class ChargedDapHandler {
         double handZ = pos.z + rightZ;
 
         world.spawnParticles(ParticleTypes.FLAME, handX, handY, handZ, 1, 0.06, 0.06, 0.06, 0.005);
-
         if (fireLevel > 0.6f) {
             world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, handX, handY, handZ, 1, 0.05, 0.05, 0.05, 0.003);
         }
@@ -3257,28 +3232,6 @@ public class ChargedDapHandler {
                     knockbackStrength * 1.5,
                     knockDir.z * knockbackStrength);
             entity.velocityModified = true;
-
-            entity.setOnFireFor(5);
-        }
-
-        for (double ringRadius = 3.0; ringRadius <= 15.0; ringRadius += 1.5) {
-            int points = (int) (ringRadius * 8);
-            for (int i = 0; i < points; i++) {
-                double angle = (2 * Math.PI * i) / points;
-                double fireX = pos.x + Math.cos(angle) * ringRadius;
-                double fireZ = pos.z + Math.sin(angle) * ringRadius;
-
-                BlockPos groundPos = world.getTopPosition(
-                        net.minecraft.world.Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-                        BlockPos.ofFloored(fireX, pos.y, fireZ));
-
-                BlockPos firePos = groundPos.up();
-                if (world.getBlockState(firePos).isAir()) {
-                    world.setBlockState(firePos, net.minecraft.block.Blocks.FIRE.getDefaultState());
-
-                    world.scheduleBlockTick(firePos, net.minecraft.block.Blocks.FIRE, 60);
-                }
-            }
         }
 
         Random rand = new Random();
@@ -3881,7 +3834,6 @@ public class ChargedDapHandler {
         Random random = new Random();
         // int fireCount = 0;
         for (int i = 0; i < 300; i++) {
-
             double angle = random.nextDouble() * Math.PI * 2;
             double distance = 4 + random.nextDouble() * 16;
 
@@ -3891,9 +3843,8 @@ public class ChargedDapHandler {
             BlockPos pos = new BlockPos((int) x, (int) midpoint.y, (int) z);
             BlockPos above = pos.up();
 
-            if (world.getBlockState(pos).isSolidBlock(world, pos) &&
-                    world.getBlockState(above).isAir()) {
-                world.setBlockState(above, net.minecraft.block.Blocks.FIRE.getDefaultState());
+            if (world.getBlockState(pos).isSolidBlock(world, pos) && world.getBlockState(above).isAir()) {
+                // world.setBlockState(above, net.minecraft.block.Blocks.FIRE.getDefaultState());
                 // fireCount++;
 
                 world.spawnParticles(ParticleTypes.FLAME, x, midpoint.y + 0.5, z, 20, 0.5, 1.0, 0.5, 0.08);
