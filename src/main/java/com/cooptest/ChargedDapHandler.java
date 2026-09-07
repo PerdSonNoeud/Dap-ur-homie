@@ -757,18 +757,11 @@ public class ChargedDapHandler {
                     smoothDapDescent(player, stand);
                 }
 
-                // if (elapsed >= 150 && elapsed <= 1330 && partner != null) {
-                //     ServerWorld world = player.getServerWorld();
-
-                //     Vec3d particlePos;
-                //     net.minecraft.entity.decoration.ArmorStandEntity stand = perfectDapArmorStands.get(playerId);
-                //     if (stand != null && !stand.isRemoved()) {
-                //         particlePos = stand.getPos();
-                //     } else {
-
-                //         particlePos = player.getPos().add(partner.getPos()).multiply(0.5).add(0, 1.4, 0);
-                //     }
-                // }
+                if (elapsed >= 150 && elapsed <= 1330 && partner != null) {
+                    net.minecraft.entity.decoration.ArmorStandEntity stand = perfectDapArmorStands.get(playerId);
+                    if (stand == null || stand.isRemoved())
+                        player.getPos().add(partner.getPos()).multiply(0.5).add(0, 1.4, 0);
+                }
 
                 if (elapsed >= 290 && elapsed < 310 && partner != null) {
                     if (!perfectDapImpactSent.getOrDefault(playerId, false)) {
