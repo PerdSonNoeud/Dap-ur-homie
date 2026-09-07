@@ -12,7 +12,7 @@ public class QTEManager {
     private static final int STAGE_3_DELAY_TICKS = 4;
     private static final int STAGE_3_WINDOW_TICKS = 6;
     private static final int TIMEOUT_GRACE_TICKS = 4;
-    private static final String[] BUTTONS = {"G", "H"};
+    private static final String[] BUTTONS = {"G"};
     private static final Random RANDOM = new Random();
     private static final Map<UUID, QTESession> activeSessions = new HashMap<>();
     public static class QTESession {
@@ -57,7 +57,6 @@ public class QTEManager {
             switch (stage) {
                 case 1 -> { delayTicks = STAGE_1_DELAY_TICKS; windowTicks = STAGE_1_WINDOW_TICKS; }
                 case 2 -> { delayTicks = STAGE_2_DELAY_TICKS; windowTicks = STAGE_2_WINDOW_TICKS; }
-                case 3 -> { delayTicks = STAGE_3_DELAY_TICKS; windowTicks = STAGE_3_WINDOW_TICKS; }
                 default -> { delayTicks = STAGE_3_DELAY_TICKS; windowTicks = STAGE_3_WINDOW_TICKS; }
             }
         }
