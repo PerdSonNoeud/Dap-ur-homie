@@ -1744,10 +1744,7 @@ public class ChargedDapHandler {
     private static void executeDap(ServerPlayerEntity p1, ServerPlayerEntity p2,
                                    float charge1, float charge2, float fire1, float fire2,
                                    long releaseTime1, long releaseTime2) {
-
-        if (DapHoldHandler.isInDapHold(p1.getUuid()) || DapHoldHandler.isInDapHold(p2.getUuid())) {
-            return;
-        }
+        if (DapHoldHandler.isInDapHold(p1.getUuid()) || DapHoldHandler.isInDapHold(p2.getUuid())) return;
 
         long now = System.currentTimeMillis();
         cooldowns.put(p1.getUuid(), now + cooldownMs());
@@ -1764,11 +1761,8 @@ public class ChargedDapHandler {
         boolean bothCharging = chargeStartTime.containsKey(p1.getUuid()) && chargeStartTime.containsKey(p2.getUuid());
 
         int tier = calculateTier(avgCharge, combinedSpeed, fire1, fire2);
-
         if (tier >= 3 && bothCharging && !perfectHit) {
-
             if (timeDiff > releaseWindowMs()) {
-
                 return;
             }
         }
@@ -1810,7 +1804,6 @@ public class ChargedDapHandler {
             case 4 -> executeTier4Legendary(world, dapPos, p1, p2, perfectHit, bothCharging);
             case 5 -> executeTier5FireDap(world, dapPos, p1, p2, perfectHit);
         }
-
         p1.swingHand(net.minecraft.util.Hand.MAIN_HAND, true);
         p2.swingHand(net.minecraft.util.Hand.MAIN_HAND, true);
 
@@ -2112,21 +2105,17 @@ public class ChargedDapHandler {
     private static void executeTier3Great(ServerWorld world, Vec3d pos, ServerPlayerEntity p1, ServerPlayerEntity p2,
                                           boolean perfectHit, boolean bothCharging) {
         if (bothCharging && perfectHit) {
-
             rotateBothPlayersToFaceEachOther(p1, p2);
 
             if (FacingDapHandler.areFacingEachOther(p1, p2) && !FacingDapHandler.isActive(p1.getUuid())) {
                 FacingDapHandler.start(p1, p2);
                 return;
             }
-
             long now = System.currentTimeMillis();
             UUID id1 = p1.getUuid();
             UUID id2 = p2.getUuid();
 
-            DapSession session = DapSessionManager.createSession(
-                    id1, id2,
-                    1.5,
+            DapSession session = DapSessionManager.createSession(id1, id2, 1.5,
                     DapSession.DapType.PERFECT_DAP);
 
             if (session == null) {
@@ -2140,7 +2129,6 @@ public class ChargedDapHandler {
             perfectDapPartner.put(id2, id1);
 
             session.onComplete(() -> startPerfectDapTier3Animation(world, pos, p1, p2));
-
         } else {
             executeTier3Normal(world, pos, p1, p2);
         }
@@ -2378,14 +2366,11 @@ public class ChargedDapHandler {
                         activeSaturnRings.add(new SaturnRing(pos, System.currentTimeMillis()));
 
                     });
-
                 } catch (InterruptedException e) {
                     // e.printStackTrace();
                 }
             }).start();
-
         } else if (bothCharging) {
-
             world.playSound(null, pos.x, pos.y, pos.z,
                     ModSounds.EPIC_DAP, SoundCategory.PLAYERS, 2.0f, 0.5f);
             world.playSound(null, pos.x, pos.y, pos.z,
@@ -2398,8 +2383,7 @@ public class ChargedDapHandler {
             world.spawnParticles(ParticleTypes.SOUL, pos.x, pos.y, pos.z, 50, 0.5, 0.5, 0.5, 0.2);
             world.spawnParticles(ParticleTypes.SMOKE, pos.x, pos.y, pos.z, 100, 1.0, 1.0, 1.0, 0.1);
 
-            // world.createExplosion(null, pos.x, pos.y, pos.z, 6.0f,
-            //         !CoopMovesConfig.get().noGriefMode,
+            // world.createExplosion(null, pos.x, pos.y, pos.z, 6.0f, !CoopMovesConfig.get().noGriefMode,
             //         net.minecraft.world.World.ExplosionSourceType.MOB);
 
             removeTotem(p1);
@@ -2420,7 +2404,6 @@ public class ChargedDapHandler {
                         false);
             }
         } else {
-
             world.playSound(null, pos.x, pos.y, pos.z,
                     ModSounds.EPIC_DAP, SoundCategory.PLAYERS, 2.0f, 0.9f);
             world.playSound(null, pos.x, pos.y, pos.z,
@@ -2432,10 +2415,8 @@ public class ChargedDapHandler {
             world.spawnParticles(ParticleTypes.EXPLOSION_EMITTER, pos.x, pos.y, pos.z, 1, 0, 0, 0, 0);
             world.spawnParticles(ParticleTypes.FIREWORK, pos.x, pos.y, pos.z, 40, 0.5, 0.5, 0.5, 0.25);
 
-            // world.createExplosion(null, pos.x, pos.y, pos.z, 5.0f,
-            //         !CoopMovesConfig.get().noGriefMode,
+            // world.createExplosion(null, pos.x, pos.y, pos.z, 5.0f, !CoopMovesConfig.get().noGriefMode,
             //         net.minecraft.world.World.ExplosionSourceType.MOB);
-
             applyKnockback(p1, p2);
 
             p1.sendMessage(net.minecraft.text.Text.literal("§d§l⚡ LEGENDARY DAP! ⚡"), true);
@@ -2444,23 +2425,17 @@ public class ChargedDapHandler {
     }
 
     private static void removeTotem(ServerPlayerEntity player) {
-
-        if (player.getMainHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING)) {
+        if (player.getMainHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING))
             player.getMainHandStack().setCount(0);
-        }
-
-        if (player.getOffHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING)) {
+        if (player.getOffHandStack().isOf(net.minecraft.item.Items.TOTEM_OF_UNDYING))
             player.getOffHandStack().setCount(0);
-        }
     }
 
     public static void checkTickSpeedRestore(net.minecraft.server.MinecraftServer server) {
         long now = System.currentTimeMillis();
 
         if (tickSpeedRestoreTime > 0 && now >= tickSpeedRestoreTime) {
-
-            server.getCommandManager().executeWithPrefix(
-                    server.getCommandSource().withSilent(),
+            server.getCommandManager().executeWithPrefix(server.getCommandSource().withSilent(),
                     "tick rate 20");
             tickSpeedRestoreTime = 0;
 
@@ -2483,13 +2458,11 @@ public class ChargedDapHandler {
                 ServerPlayerEntity partner = partnerId != null ? server.getPlayerManager().getPlayer(partnerId) : null;
 
                 if (player != null) {
-
                     player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 600, 0, false, true));
                     processed.add(playerId);
                 }
 
                 if (player != null && partner != null && !processed.contains(partnerId)) {
-
                     partner.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOW_FALLING, 600, 0, false, true));
                     processed.add(partnerId);
 
@@ -2501,7 +2474,6 @@ public class ChargedDapHandler {
                                 false);
                     }
                 }
-
                 it.remove();
             }
         }
